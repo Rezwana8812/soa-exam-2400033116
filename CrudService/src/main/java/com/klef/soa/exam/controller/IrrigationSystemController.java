@@ -1,20 +1,16 @@
-
 package com.klef.soa.exam.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.klef.soa.exam.entity.IrrigationSystem;
 import com.klef.soa.exam.service.IrrigationSystemService;
 
 @RestController
+@RequestMapping("/")
 public class IrrigationSystemController {
 
     private final IrrigationSystemService service;
@@ -23,31 +19,40 @@ public class IrrigationSystemController {
         this.service = service;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public String home() {
-        return "IrrigationSystem CRUD Service is running!";
+        return "Irrigation System CRUD Service is Running";
     }
 
     @PostMapping("/Add")
-    public IrrigationSystem add(
+    public ResponseEntity<IrrigationSystem> addSystem(
             @RequestBody IrrigationSystem system) {
-        return service.addSystem(system);
+
+        IrrigationSystem savedSystem = service.addSystem(system);
+
+        return new ResponseEntity<>(
+                savedSystem, HttpStatus.CREATED);
     }
 
     @GetMapping("/DisplayAll")
-    public List<IrrigationSystem> displayAll() {
-        return service.getAllSystems();
+    public ResponseEntity<List<IrrigationSystem>> displayAll() {
+
+        List<IrrigationSystem> systems = service.getAllSystems();
+
+        return ResponseEntity.ok(systems);
     }
 
     @DeleteMapping("/Delete/{id}")
-    public ResponseEntity<String> delete(
-            @PathVariable Long id) {
-        String result = service.deleteSystem(id);
+    public ResponseEntity<String> deleteSystem(@PathVariable Long id) {
 
-        if (result.startsWith("Irrigation system not found")) {
-            return ResponseEntity.notFound().build();
+        if (!service.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Irrigation system not found with ID: " + id);
         }
 
-        return ResponseEntity.ok(result);
+        service.deleteSystem(id);
+
+        return ResponseEntity.ok(
+                "Irrigation system deleted successfully");
     }
 }
