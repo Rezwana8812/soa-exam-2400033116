@@ -1,10 +1,7 @@
-
 package com.klef.soa.exam.service;
 
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
 import com.klef.soa.exam.entity.IrrigationSystem;
 import com.klef.soa.exam.repository.IrrigationSystemRepository;
 
@@ -13,8 +10,7 @@ public class IrrigationSystemService {
 
     private final IrrigationSystemRepository repository;
 
-    public IrrigationSystemService(
-            IrrigationSystemRepository repository) {
+    public IrrigationSystemService(IrrigationSystemRepository repository) {
         this.repository = repository;
     }
 
@@ -26,12 +22,11 @@ public class IrrigationSystemService {
         return repository.findAll();
     }
 
-    public String deleteSystem(Long id) {
-        if (!repository.existsById(id)) {
-            return "Irrigation system not found with ID: " + id;
-        }
+    public boolean existsById(Long id) {
+        return repository.existsById(id);
+    }
 
+    public void deleteSystem(Long id) {
         repository.deleteById(id);
-        return "Irrigation system deleted successfully. ID: " + id;
     }
 }
